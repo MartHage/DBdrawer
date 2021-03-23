@@ -1,14 +1,16 @@
+import itertools
+
 import pygame
 from objects import *
 from util import *
 
-n = 40
-m = 40
+n = 50
+m = 50
 width = 900
 height = 900
 
-edge_width = 2
-dot_radius = 3
+edge_width = 1
+dot_radius = 2
 
 pygame.init()
 
@@ -81,6 +83,8 @@ click = False
 color = (150, 150, 150)
 highlight_color = (100, 100, 100)
 
+save_edges = [False] * len(edges)
+
 while not crashed:
     click_pos_2 = click_pos_1
     click_pos_1 = pygame.mouse.get_pos()
@@ -106,15 +110,34 @@ while not crashed:
             highlight_color = (0, 0, 150)
 
         if pressed[pygame.K_o]:
+            first = False
+            for i in range(len(edges)):
+                if not edges[i].active:
+                    first = True
+                    break
+
+            if first:
+                for i in range(len(edges)):
+                    save_edges[i] = edges[i].active
+
             for e in edges:
                 e.active = True
                 e.color = (150, 150, 150)
                 e.complete_edge((100, 100, 100))
 
         if pressed[pygame.K_p]:
+            for i in range(len(edges)):
+                save_edges[i] = edges[i].active
+
             for e in edges:
                 if e.active and (e.color == (255, 0, 0) or e.color == (0, 0, 255)):
                     e.active = False
+
+        if pressed[pygame.K_z]:
+            for i in range(len(edges)):
+                edges[i].color = (150, 150, 150)
+                edges[i].active = save_edges[i]
+
 
     gameDisplay.fill((50, 50, 50))
 

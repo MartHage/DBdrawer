@@ -30,8 +30,9 @@ class Edge:
     left_box = None
     right_box = None
 
-    def __init__(self, rect):
+    def __init__(self, rect, active=True):
         self.rect = rect
+        self.active = active
 
     def get_color(self):
         if self.active:
