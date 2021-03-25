@@ -13,3 +13,8 @@ Toggle an edge by clicking and dragging over that edge.
 
   * Reset the board fully, press `o`
   * Reset only the colored edges, press `p`
+  
+## Exporting to IPE
+
+  * Press `c` to export the drawing in IPE format to the clipboard
+  * Paste the drawing in IPE with `ctrl + v`
