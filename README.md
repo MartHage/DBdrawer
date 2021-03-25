@@ -1,6 +1,6 @@
 # DBdrawer
 
-To start the program, run the file `DotsAndBoxes.py` after installing all dependencies (`pip install pygame` should do it).
+To start the program, run the file `DotsAndBoxes.py` after installing all dependencies (`pip install pygame pyperclip` should do it).
 
 ## Drawing edges
 

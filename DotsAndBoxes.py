@@ -109,7 +109,8 @@ def export_latex():
                     min_x = min(min_x, x)
                     min_y = min(min_y, y)
 
-                active_boxes.append((corners, color_box))
+                if color_box != 'white':
+                    active_boxes.append((corners, color_box))
 
                 if boxes[i][j].left.get_color() != (40, 40, 40):
                     line_color = 'black'
