@@ -3,6 +3,7 @@ import itertools
 import pygame
 from objects import *
 from util import *
+import pyperclip
 
 n = 50
 m = 50
@@ -75,6 +76,104 @@ def line(start, end):
     pygame.draw.line(gameDisplay, (0, 0, 0), start, end, width=10)
 
 
+def export_latex():
+    print("        ")
+
+    size = 8
+
+    min_x = 10000000
+    min_y = 10000000
+
+    body = ''
+
+    active_boxes = []
+    points = set()
+    lines = set()
+
+    for j in range(n - 1):
+        for i in range(n - 1):
+            if boxes[i][j].get_color() != (100, 100, 100):
+                # draw points
+                color_box = 'white'
+                if boxes[i][j].get_color() == (0, 0, 150):
+                    color_box = 'blue'
+                elif boxes[i][j].get_color() == (150, 0, 0):
+                    color_box = 'red'
+
+                corners = []
+                for off in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+                    x = (i + off[0]) * size
+                    y = (1000 - j - off[1]) * size
+                    points.add((x, y))
+                    corners.append((x, y))
+                    min_x = min(min_x, x)
+                    min_y = min(min_y, y)
+
+                active_boxes.append((corners, color_box))
+
+                if boxes[i][j].left.get_color() != (40, 40, 40):
+                    line_color = 'black'
+                    if boxes[i][j].left.color == (255, 0, 0):
+                        line_color = 'red'
+                    if boxes[i][j].left.color == (0, 0, 255):
+                        line_color = 'blue'
+
+                    lines.add((((i * size, (1000 - j) * size), (i * size, (1000 - j - 1) * size)), line_color))
+
+                if boxes[i][j].right.get_color() != (40, 40, 40):
+                    line_color = 'black'
+                    if boxes[i][j].right.color == (255, 0, 0):
+                        line_color = 'red'
+                    if boxes[i][j].right.color == (0, 0, 255):
+                        line_color = 'blue'
+
+                    lines.add(((((i + 1) * size, (1000 - j) * size), ((i + 1) * size, (1000 - j - 1) * size)), line_color))
+
+                if boxes[i][j].upper.get_color() != (40, 40, 40):
+                    line_color = 'black'
+                    if boxes[i][j].upper.color == (255, 0, 0):
+                        line_color = 'red'
+                    if boxes[i][j].upper.color == (0, 0, 255):
+                        line_color = 'blue'
+
+                    lines.add(((((i) * size, (1000 - j) * size), ((i + 1) * size, (1000 - j) * size)), line_color))
+
+                if boxes[i][j].bottom.get_color() != (40, 40, 40):
+                    line_color = 'black'
+                    if boxes[i][j].bottom.color == (255, 0, 0):
+                        line_color = 'red'
+                    if boxes[i][j].bottom.color == (0, 0, 255):
+                        line_color = 'blue'
+
+                    lines.add(((((i) * size, (1000 - j - 1) * size), ((i + 1) * size, (1000 - j - 1) * size)), line_color))
+
+    body = f'<ipeselection pos="{min_x} {min_y}">'
+
+    for corners, color_box in active_boxes:
+        body += f'<path layer="alpha" fill="{color_box}" opacity="30%" stroke-opacity="opaque">\n'
+        body += f'{corners[0][0]} {corners[0][1]} m\n'
+        body += f'{corners[1][0]} {corners[1][1]} l\n'
+        body += f'{corners[3][0]} {corners[3][1]} l\n'
+        body += f'{corners[2][0]} {corners[2][1]} l\n'
+        body += f'h\n'
+        body += f'</path>\n'
+
+    for line, line_color in lines:
+        body += f'<path layer="alpha" stroke="{line_color}">\n'
+        body += f'{line[0][0]} {line[0][1]} m\n'
+        body += f'{line[1][0]} {line[1][1]} l\n'
+        body += f'</path>\n'
+
+    for point in points:
+        body += f'<use layer="alpha" name="mark/disk(sx)" pos="{point[0]} {point[1]}" size="tiny" stroke="black"/>\n'
+
+    body += f'</ipeselection>'
+
+    pyperclip.copy(body)
+
+    print(" Succesfully copied to clippboard ")
+
+
 click_pos_1 = (0, 0)
 click_pos_2 = (0, 0)
 
@@ -137,6 +236,10 @@ while not crashed:
             for i in range(len(edges)):
                 edges[i].color = (150, 150, 150)
                 edges[i].active = save_edges[i]
+
+
+        if pressed[pygame.K_c]:
+            export_latex()
 
 
     gameDisplay.fill((50, 50, 50))
